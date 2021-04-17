@@ -1,26 +1,25 @@
-const { check, validationResult } = require('express-validator');
+const { body, validationResult } = require('express-validator');
 
 module.exports = function (app) {
-    app.use(check());
 
     app.get('/formulario_inclusao_noticia', function(req, res){
-        res.render("admin/form_add_noticia");
+        res.render("admin/form_add_noticia", {validacao: {}, noticia: {}});
     });
 
-    app.post('/noticias/salvar', function(req, res){
+    app.post('/noticias/salvar',
+    body('titulo', 'Título é obrigatório').notEmpty(),
+    body('resumo', 'Resumo é obrigatório').notEmpty(),
+    body('resumo', 'Resumo deve conter entre 10 e sem caracteres').isLength({ min: 10, max:100 }),
+    body('autor', 'Autor é obrigatório').notEmpty(),
+    body('data_noticia', 'Data é obrigatória').notEmpty().isDate({format: 'YYYY-MM-DD'}),
+    body('noticia', 'Notícia é obrigatória').notEmpty(),
+    function(req, res){
         var noticia = req.body;
-
-        check('titulo', 'Título é obrigatório').notEmpty();
-        check('resumo', 'Resumo é obrigatório').notEmpty();
-        check('resumo', 'Resumo deve conter entre 10 e sem caracteres').isLength({ min: 10, max:100 });;
-        check('autor', 'Autor é obrigatório').notEmpty();
-        check('data_noticia', 'Data é obrigatória').notEmpty().isDate({format: 'YYYY-MM-DD'});
-        check('noticia', 'Notícia é obrigatória').notEmpty();
 
         const errors = validationResult(req);
 
-        if (errors) {
-            res.render("admin/form_add_noticia");
+        if (!errors.isEmpty()) {
+            res.render("admin/form_add_noticia", {validacao : errors.array(), noticia : noticia});
             return;
         }
 
