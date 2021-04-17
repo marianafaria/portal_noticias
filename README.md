@@ -1,1 +1,1 @@
-Projeto do Curso NodeJS e MongoDB
+Projeto Portal de Noticias do Curso NodeJS e MongoDB
