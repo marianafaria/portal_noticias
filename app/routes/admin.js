@@ -3,7 +3,7 @@ const { body, validationResult } = require('express-validator');
 module.exports = function (app) {
 
     app.get('/formulario_inclusao_noticia', function(req, res){
-        res.render("admin/form_add_noticia", {validacao: {}, noticia: {}});
+        app.app.controllers.admin.formulario_inclusao_noticia(app, req, res);
     });
 
     app.post('/noticias/salvar',
@@ -14,20 +14,6 @@ module.exports = function (app) {
     body('data_noticia', 'Data é obrigatória').notEmpty().isDate({format: 'YYYY-MM-DD'}),
     body('noticia', 'Notícia é obrigatória').notEmpty(),
     function(req, res){
-        var noticia = req.body;
-
-        const errors = validationResult(req);
-
-        if (!errors.isEmpty()) {
-            res.render("admin/form_add_noticia", {validacao : errors.array(), noticia : noticia});
-            return;
-        }
-
-        var connection = app.config.database();
-        var noticiasModel = new app.app.models.NoticiasDAO(connection);
-
-        noticiasModel.salvarNoticia(noticia, function(erro, result) {
-            res.redirect('/noticias');
-        });
+        app.app.controllers.admin.noticias_salvar(app, req, res);
     });
 };
